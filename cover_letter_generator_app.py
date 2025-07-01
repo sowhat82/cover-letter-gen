@@ -16,6 +16,11 @@ st.title("📄 GPT-Powered Cover Letter Generator")
 # 🔑 Manually enter your OpenRouter API key here
 api_key = st.secrets["openrouter_api_key"]
 
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+}
+
 if not api_key or api_key.strip() == "":
     st.error("Please enter your OpenRouter API key in the script.")
     st.stop()
