@@ -15,7 +15,7 @@ st.title("📄 GPT-Powered Cover Letter Generator")
 
 # 🔑 Securely load your OpenRouter API key from Streamlit secrets
 api_key = st.secrets.get("openrouter_api_key", "")
-st.write("Loaded API key length:", len(api_key))
+
 
 if not api_key.strip():
     st.error("❌ OpenRouter API key not found. Please set it in Streamlit secrets.")
@@ -32,6 +32,20 @@ resume_file = st.file_uploader("📎 Upload your resume (PDF)", type=["pdf"])
 jd_files = st.file_uploader("📄 Upload one or more job descriptions (TXT)", type=["txt"], accept_multiple_files=True)
 
 # --- Helper Functions ---
+def test_openrouter_key():
+    test_prompt = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": "Say hello"}]
+    }
+
+    response = requests.post(url, headers=headers, json=test_prompt)
+    st.write("Test API status:", response.status_code)
+    st.write("Test response:", response.text)
+
+if st.button("🔍 Test OpenRouter"):
+    test_openrouter_key()
+
+
 def extract_text_from_pdf(uploaded_pdf):
     doc = fitz.open(stream=uploaded_pdf.read(), filetype="pdf")
     return "".join([page.get_text() for page in doc])
