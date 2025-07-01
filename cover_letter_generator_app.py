@@ -15,6 +15,7 @@ st.title("📄 GPT-Powered Cover Letter Generator")
 
 # 🔑 Securely load your OpenRouter API key from Streamlit secrets
 api_key = st.secrets.get("openrouter_api_key", "")
+st.write("Loaded API key length:", len(api_key))
 
 if not api_key.strip():
     st.error("❌ OpenRouter API key not found. Please set it in Streamlit secrets.")
