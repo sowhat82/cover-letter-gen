@@ -14,12 +14,11 @@ st.set_page_config(page_title="AI Cover Letter Generator", layout="centered")
 st.title("📄 GPT-Powered Cover Letter Generator")
 
 # 🔑 Manually enter your OpenRouter API key here
-api_key = "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"  # <-- replace this with your actual API key
+api_key = st.secrets["openrouter_api_key"]
 
 if not api_key or api_key.strip() == "":
     st.error("Please enter your OpenRouter API key in the script.")
     st.stop()
-
 
 headers = {
     "Authorization": f"Bearer {api_key}",
@@ -63,6 +62,7 @@ def generate_filename_from_jd(jd_text):
         return "UnnamedRole"
 
 def generate_cover_letter(resume, jd):
+    
     prompt = {
         "model": "mistralai/mistral-7b-instruct",
         "messages": [
@@ -70,7 +70,7 @@ def generate_cover_letter(resume, jd):
                 "role": "system",
                 "content": (
                     "You are a career assistant. Write a tailored, confident, 3-paragraph cover letter "
-                    "based on the user's resume and job description. Sign off with 'Alvin Cheong'."
+                    "based on the user's resume and job description. Sign off with 'Your Name'."
                 )
             },
             {
@@ -85,8 +85,27 @@ Here is the job description:
     }
 
     response = requests.post(url, headers=headers, json=prompt)
-    return response.json()["choices"][0]["message"]["content"]
 
+    # 🔍 Debug: print response details
+    st.write("API status:", response.status_code)
+    st.write("API response:", response.text)
+
+    try:
+        result_json = response.json()
+        if "choices" in result_json:
+            return result_json["choices"][0]["message"]["content"]
+        else:
+            st.error("❌ API response does not contain expected content.")
+            st.write("Full response:", result_json)
+            st.stop()
+    except Exception as e:
+        st.error("❌ Failed to process the API response.")
+        st.write("Exception details:", str(e))
+        st.write("Raw response:", response.text)
+        st.stop()
+
+
+    return response_content
 
 # --- Main Logic ---
 if st.button("✍️ Generate Cover Letters"):
