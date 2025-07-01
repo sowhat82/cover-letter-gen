@@ -13,6 +13,11 @@ import re
 st.set_page_config(page_title="AI Cover Letter Generator", layout="centered")
 st.title("📄 GPT-Powered Cover Letter Generator")
 
+st.markdown("""
+Upload your resume (PDF) and one or more job descriptions (TXT).
+The app will generate tailored cover letters for each JD.
+""")
+
 # 🔑 Securely load your OpenRouter API key from Streamlit secrets
 api_key = st.secrets.get("openrouter_api_key", "")
 
@@ -128,25 +133,29 @@ if st.button("✍️ Generate Cover Letters"):
 
     resume_text = extract_text_from_pdf(resume_file)
 
-    output_zip = io.BytesIO()
-    with zipfile.ZipFile(output_zip, "w") as zipf:
-        for i, jd_file in enumerate(jd_files, 1):
-            jd_text = jd_file.read().decode("utf-8")
-            slug = generate_filename_from_jd(jd_text)
-            docx_filename = f"CoverLetter_{slug}_{i}.docx"
+    with st.spinner("✍️ Generating your cover letters... This may take 15–30 seconds."):
 
-            cover_letter = generate_cover_letter(resume_text, jd_text)
+        output_zip = io.BytesIO()
+        with zipfile.ZipFile(output_zip, "w") as zipf:
+            for i, jd_file in enumerate(jd_files, 1):
+                jd_text = jd_file.read().decode("utf-8")
+                slug = generate_filename_from_jd(jd_text)
+                docx_filename = f"CoverLetter_{slug}_{i}.docx"
 
-            doc_stream = io.BytesIO()
-            doc = Document()
-            for para in cover_letter.strip().split("\n\n"):
-                p = doc.add_paragraph(para.strip())
-                p.style.font.name = 'Calibri'
-                p.style.font.size = Pt(11)
-            doc.save(doc_stream)
-            doc_stream.seek(0)
+                cover_letter = generate_cover_letter(resume_text, jd_text)
 
-            zipf.writestr(docx_filename, doc_stream.read())
+                doc_stream = io.BytesIO()
+                doc = Document()
+                for para in cover_letter.strip().split("\n\n"):
+                    p = doc.add_paragraph(para.strip())
+                    p.style.font.name = 'Calibri'
+                    p.style.font.size = Pt(11)
+                doc.save(doc_stream)
+                doc_stream.seek(0)
+
+                zipf.writestr(docx_filename, doc_stream.read())
 
     st.success("✅ Cover letters generated!")
     st.download_button("📥 Download All Cover Letters (ZIP)", data=output_zip.getvalue(), file_name="CoverLetters.zip", mime="application/zip")
+
+st.caption("⚠️ AI-generated. Please review and personalize before sending.")
