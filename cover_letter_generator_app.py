@@ -42,8 +42,8 @@ def test_openrouter_key():
     st.write("Test API status:", response.status_code)
     st.write("Test response:", response.text)
 
-if st.button("🔍 Test OpenRouter"):
-    test_openrouter_key()
+#if st.button("🔍 Test OpenRouter"):
+ #   test_openrouter_key()
 
 
 def extract_text_from_pdf(uploaded_pdf):
@@ -101,8 +101,7 @@ Here is the job description:
     response = requests.post(url, headers=headers, json=prompt)
 
     # 🔍 Debug: print response details
-    st.write("API status:", response.status_code)
-    st.write("API response:", response.text)
+#    st.write("API status:", response.status_code)
 
     try:
         result_json = response.json()
