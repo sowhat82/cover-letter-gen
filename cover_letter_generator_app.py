@@ -13,22 +13,16 @@ import re
 st.set_page_config(page_title="AI Cover Letter Generator", layout="centered")
 st.title("📄 GPT-Powered Cover Letter Generator")
 
-# 🔑 Manually enter your OpenRouter API key here
-api_key = st.secrets["openrouter_api_key"]
+# 🔑 Securely load your OpenRouter API key from Streamlit secrets
+api_key = st.secrets.get("openrouter_api_key", "")
 
-headers = {
-    "Authorization": f"Bearer {api_key}",
-    "Content-Type": "application/json"
-}
-
-if not api_key or api_key.strip() == "":
-    st.error("Please enter your OpenRouter API key in the script.")
+if not api_key.strip():
+    st.error("❌ OpenRouter API key not found. Please set it in Streamlit secrets.")
     st.stop()
 
 headers = {
     "Authorization": f"Bearer {api_key}",
-    "HTTP-Referer": "https://yourdomain.com",
-    "Content-Type": "application/json",
+    "Content-Type": "application/json"
 }
 url = "https://openrouter.ai/api/v1/chat/completions"
 
