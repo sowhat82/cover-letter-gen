@@ -36,6 +36,13 @@ url = "https://openrouter.ai/api/v1/chat/completions"
 resume_file = st.file_uploader("📎 Upload your resume (PDF)", type=["pdf"])
 jd_files = st.file_uploader("📄 Upload one or more job descriptions (TXT)", type=["txt"], accept_multiple_files=True)
 
+# Accept text input for job descriptions
+jd_text_input = st.text_area(
+    "📋 Or paste one or more job descriptions here (separate them with '---')",
+    height=300,
+    help="Paste multiple job descriptions separated by '---'"
+)
+
 # --- Helper Functions ---
 def test_openrouter_key():
     test_prompt = {
@@ -127,18 +134,28 @@ Here is the job description:
 
 # --- Main Logic ---
 if st.button("✍️ Generate Cover Letters"):
-    if not resume_file or not jd_files:
-        st.warning("Please upload both your resume and job descriptions.")
+    if not resume_file or (not jd_files and not jd_text_input.strip()):
+        st.warning("Please upload your resume and provide at least one job description.")
         st.stop()
 
     resume_text = extract_text_from_pdf(resume_file)
+
+    # ✅ Gather job descriptions from files and text input
+    jd_texts = []
+
+    if jd_files:
+        for file in jd_files:
+            jd_texts.append(file.read().decode("utf-8"))
+
+    if jd_text_input.strip():
+        pasted_jds = [jd.strip() for jd in jd_text_input.split('---') if jd.strip()]
+        jd_texts.extend(pasted_jds)
 
     with st.spinner("✍️ Generating your cover letters... This may take 15–30 seconds."):
 
         output_zip = io.BytesIO()
         with zipfile.ZipFile(output_zip, "w") as zipf:
-            for i, jd_file in enumerate(jd_files, 1):
-                jd_text = jd_file.read().decode("utf-8")
+            for i, jd_text in enumerate(jd_texts, 1):
                 slug = generate_filename_from_jd(jd_text)
                 docx_filename = f"CoverLetter_{slug}_{i}.docx"
 
