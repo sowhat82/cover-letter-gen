@@ -2,3 +2,4 @@ streamlit
 PyMuPDF
 requests
 python-docx
+streamlit-analytics
