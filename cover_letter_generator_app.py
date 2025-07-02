@@ -176,3 +176,5 @@ if st.button("✍️ Generate Cover Letters"):
     st.download_button("📥 Download All Cover Letters (ZIP)", data=output_zip.getvalue(), file_name="CoverLetters.zip", mime="application/zip")
 
 st.caption("⚠️ AI-generated. Please review and personalize before sending.")
+
+st.markdown("☕ If this tool saved you time, [you can support me here](https://buymeacoffee.com/alvincheong). It helps me keep building more useful AI tools!")
