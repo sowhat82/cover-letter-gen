@@ -123,7 +123,7 @@ def generate_cover_letter(resume, jd, length_option, custom_instructions):
         user_input = (
             f"My resume: {resume}\n\n"
             f"Job description: {jd}\n\n"
-            f"Additional context to include: {custom_instructions.strip()}"
+            f"Please include the following personal context in the cover letter: {custom_instructions.strip()}"
         )
     else:
         user_input = f"My resume: {resume}\n\nJob description: {jd}"
@@ -134,9 +134,10 @@ def generate_cover_letter(resume, jd, length_option, custom_instructions):
             {
                 "role": "system",
                 "content": (
-                    f"You are a career assistant. Write a tailored, confident cover letter based on the user's "
-                    f"resume and job description. The letter should be {word_target}. Start directly with the "
-                    f"greeting (e.g. 'Dear Hiring Manager') and do not include any names, addresses, phone numbers, or emails. "
+                    f"You are a career assistant. Write a tailored, confident cover letter based on the user's resume and job description. "
+                    f"The letter should be {word_target}. "
+                    f"If the user provides any personal notes or context (such as a referral, connection, or why they’re interested), weave that naturally into the letter. "
+                    f"Do not list these as standalone bullet points. Start directly with the greeting (e.g. 'Dear Hiring Manager') and do not include any names, addresses, phone numbers, or emails. "
                     f"Sign off with 'Your Name'."
                 )
             },
