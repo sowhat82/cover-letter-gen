@@ -210,7 +210,7 @@ if st.button("✍️ Generate Cover Letters"):
                 slug = generate_filename_from_jd(jd_text)
                 docx_filename = f"CoverLetter_{slug}_{i}.docx"
 
-                cover_letter = generate_cover_letter(resume_text, jd_text, length_option)
+                cover_letter = generate_cover_letter(resume_text, jd_text, length_option, custom_instructions)
 
                 doc_stream = io.BytesIO()
                 doc = DocxDocument()
