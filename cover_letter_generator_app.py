@@ -4,11 +4,23 @@ import fitz  # PyMuPDF
 import requests
 import zipfile
 import io
-from docx import Document
+from docx import Document as DocxDocument
 from docx.shared import Pt
 #from streamlit_analytics import track
 import os
 import re
+
+def extract_text_from_jd(file):
+    if file.name.endswith(".txt"):
+        return file.read().decode("utf-8")
+    elif file.name.endswith(".pdf"):
+        pdf = fitz.open(stream=file.read(), filetype="pdf")
+        return "\n".join([page.get_text() for page in pdf])
+    elif file.name.endswith(".docx"):
+        doc = DocxDocument(file)
+        return "\n".join([para.text for para in doc.paragraphs])
+    else:
+        return ""
 
 # --- CONFIG ---
 st.set_page_config(page_title="AI Cover Letter Generator", layout="centered")
@@ -17,6 +29,8 @@ st.set_page_config(page_title="AI Cover Letter Generator", layout="centered")
 #with track():
 
 st.title("📄 GPT-Powered Cover Letter Generator")
+
+st.info("🔒 Your files are processed securely and never stored. All data is handled temporarily during your session and is erased when you leave the page.")
 
 st.markdown("""
 Upload your resume (PDF) and one or more job descriptions (TXT).
@@ -39,14 +53,18 @@ url = "https://openrouter.ai/api/v1/chat/completions"
 
 # --- Uploads ---
 resume_file = st.file_uploader("📎 Upload your resume (PDF)", type=["pdf"])
-jd_files = st.file_uploader("📄 Upload one or more job descriptions (TXT)", type=["txt"], accept_multiple_files=True)
+jd_files = st.file_uploader(
+    "📄 Upload one or more Job Descriptions (PDF, Word, or TXT):",
+    type=["pdf", "docx", "txt"],
+    accept_multiple_files=True
+)
 
 # Accept text input for job descriptions
 jd_text_input = st.text_area(
-    "📋 Or paste one or more job descriptions here (separate them with '---')",
-    height=300,
-    help="Paste multiple job descriptions separated by '---'"
+    "📋 Paste one or more job descriptions here",
+    help="To separate multiple JDs, insert a new line with three hyphens like this:\n\n---\n\nAvoid using --- inside the job descriptions themselves."
 )
+
 
 # --- Helper Functions ---
 def test_openrouter_key():
@@ -150,7 +168,8 @@ if st.button("✍️ Generate Cover Letters"):
 
     if jd_files:
         for file in jd_files:
-            jd_texts.append(file.read().decode("utf-8"))
+            jd_texts.append(extract_text_from_jd(file))
+
 
     if jd_text_input.strip():
         pasted_jds = [jd.strip() for jd in jd_text_input.split('---') if jd.strip()]
