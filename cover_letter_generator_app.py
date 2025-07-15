@@ -61,8 +61,8 @@ jd_files = st.file_uploader(
 
 # Accept text input for job descriptions
 jd_text_input = st.text_area(
-    "📋 Paste one or more job descriptions here",
-    help="To separate multiple JDs, insert a new line with three hyphens like this:\n\n\"---\"\n\nAvoid using --- inside the job descriptions themselves."
+    "📋 OR  Paste one or more job descriptions here",
+    help="To separate multiple JDs, insert a new line with three hyphens like this:\n\n--- \n\nAvoid using --- inside the job descriptions themselves."
 )
 
 
@@ -111,16 +111,24 @@ def generate_filename_from_jd(jd_text):
         return "UnnamedRole"
 
 def generate_cover_letter(resume, jd):
-    
+
+    if "Short" in length_option:
+        word_target = "around 200 words"
+    elif "Long" in length_option:
+        word_target = "at least 400 words"
+    else:
+        word_target = "around 300 words"
+
     prompt = {
         "model": "mistralai/mistral-7b-instruct",
         "messages": [
             {
                 "role": "system",
                 "content": (
-                    "You are a career assistant. Write a tailored, confident, 3-paragraph cover letter "
-                    "based on the user's resume and job description. Sign off with 'Your Name'."
-                )
+                    f"You are a career assistant. Write a tailored, confident cover letter based on the user's "
+                    f"resume and job description. The letter should be {word_target}. Start directly with the "
+                    f"greeting (e.g. 'Dear Hiring Manager') and do not include any names, addresses, phone numbers, or emails. "
+                    f"Sign off with 'Your Name'."                )
             },
             {
                 "role": "user",
@@ -155,6 +163,13 @@ Here is the job description:
 
     return response_content
 
+# --- Cover Letter Length Option ---
+length_option = st.selectbox(
+    "📝 Choose cover letter length:",
+    ["Short (≈ 200 words)", "Medium (≈ 300 words)", "Long (≈ 400+ words)"],
+    index=1
+)
+
 # --- Main Logic ---
 if st.button("✍️ Generate Cover Letters"):
     if not resume_file or (not jd_files and not jd_text_input.strip()):
@@ -183,7 +198,7 @@ if st.button("✍️ Generate Cover Letters"):
                 slug = generate_filename_from_jd(jd_text)
                 docx_filename = f"CoverLetter_{slug}_{i}.docx"
 
-                cover_letter = generate_cover_letter(resume_text, jd_text)
+                cover_letter = generate_cover_letter(resume_text, jd_text, length_option)
 
                 doc_stream = io.BytesIO()
                 doc = DocxDocument()
