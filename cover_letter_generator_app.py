@@ -62,7 +62,7 @@ jd_files = st.file_uploader(
 # Accept text input for job descriptions
 jd_text_input = st.text_area(
     "📋 Paste one or more job descriptions here",
-    help="To separate multiple JDs, insert a new line with three hyphens like this:\n\n---\n\nAvoid using --- inside the job descriptions themselves."
+    help="To separate multiple JDs, insert a new line with three hyphens like this:\n\n\"---\"\n\nAvoid using --- inside the job descriptions themselves."
 )
 
 
@@ -186,7 +186,7 @@ if st.button("✍️ Generate Cover Letters"):
                 cover_letter = generate_cover_letter(resume_text, jd_text)
 
                 doc_stream = io.BytesIO()
-                doc = Document()
+                doc = DocxDocument()
                 for para in cover_letter.strip().split("\n\n"):
                     p = doc.add_paragraph(para.strip())
                     p.style.font.name = 'Calibri'
