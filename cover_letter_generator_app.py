@@ -215,7 +215,7 @@ if st.button("✍️ Generate Cover Letters"):
                 doc_stream = io.BytesIO()
                 doc = DocxDocument()
                 for para in cover_letter.strip().split("\n\n"):
-                    cover_letter = generate_cover_letter(resume_text, jd_text, length_option, custom_instructions)
+                    p = doc.add_paragraph(para)
                     p.style.font.name = 'Calibri'
                     p.style.font.size = Pt(11)
                 doc.save(doc_stream)
