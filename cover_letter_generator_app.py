@@ -110,7 +110,7 @@ def generate_filename_from_jd(jd_text):
     except:
         return "UnnamedRole"
 
-def generate_cover_letter(resume, jd):
+def generate_cover_letter(resume, jd, length_option, custom_instructions):
 
     if "Short" in length_option:
         word_target = "around 200 words"
@@ -118,6 +118,15 @@ def generate_cover_letter(resume, jd):
         word_target = "at least 400 words"
     else:
         word_target = "around 300 words"
+
+    if custom_instructions.strip():
+        user_input = (
+            f"My resume: {resume}\n\n"
+            f"Job description: {jd}\n\n"
+            f"Additional context to include: {custom_instructions.strip()}"
+        )
+    else:
+        user_input = f"My resume: {resume}\n\nJob description: {jd}"
 
     prompt = {
         "model": "mistralai/mistral-7b-instruct",
@@ -128,15 +137,12 @@ def generate_cover_letter(resume, jd):
                     f"You are a career assistant. Write a tailored, confident cover letter based on the user's "
                     f"resume and job description. The letter should be {word_target}. Start directly with the "
                     f"greeting (e.g. 'Dear Hiring Manager') and do not include any names, addresses, phone numbers, or emails. "
-                    f"Sign off with 'Your Name'."                )
+                    f"Sign off with 'Your Name'."
+                )
             },
             {
                 "role": "user",
-                "content": f"""Here is my resume:
-{resume}
-
-Here is the job description:
-{jd}"""
+                "content": user_input
             }
         ]
     }
@@ -160,14 +166,20 @@ Here is the job description:
         st.write("Raw response:", response.text)
         st.stop()
 
-
-    return response_content
+    return None
 
 # --- Cover Letter Length Option ---
 length_option = st.selectbox(
     "📝 Choose cover letter length:",
     ["Short (≈ 200 words)", "Medium (≈ 300 words)", "Long (≈ 400+ words)"],
     index=1
+)
+
+# --- Optional Custom Instructions ---
+custom_instructions = st.text_area(
+    "🧠 Optional: Add custom notes (e.g. referral, where you found the job, specific interest)",
+    placeholder="Example: I was referred by a former colleague, John Tan. I’ve also followed your company’s sustainability work since 2021.",
+    height=100
 )
 
 # --- Main Logic ---
@@ -203,7 +215,7 @@ if st.button("✍️ Generate Cover Letters"):
                 doc_stream = io.BytesIO()
                 doc = DocxDocument()
                 for para in cover_letter.strip().split("\n\n"):
-                    p = doc.add_paragraph(para.strip())
+                    cover_letter = generate_cover_letter(resume_text, jd_text, length_option, custom_instructions)
                     p.style.font.name = 'Calibri'
                     p.style.font.size = Pt(11)
                 doc.save(doc_stream)
