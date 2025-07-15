@@ -33,7 +33,7 @@ st.title("📄 GPT-Powered Cover Letter Generator")
 st.info("🔒 Your files are processed securely and never stored. All data is handled temporarily during your session and is erased when you leave the page.")
 
 st.markdown("""
-Upload your resume (PDF) and one or more job descriptions (TXT).
+Upload your resume and one or more job descriptions.
 The app will generate tailored cover letters for each JD.
 """)
 
