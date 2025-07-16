@@ -62,7 +62,7 @@ jd_files = st.file_uploader(
 # Accept text input for job descriptions
 jd_text_input = st.text_area(
     "📋 OR  Paste one or more job descriptions here",
-    help="To separate multiple JDs, insert a new line with three hyphens like this:\n\n\"---\"\n\nAvoid using --- inside the job descriptions themselves."
+    help="To separate multiple JDs, insert a new line with three hyphens like this:\n\n'---'\n\nAvoid using --- inside the job descriptions themselves."
 )
 
 
